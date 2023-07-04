@@ -5,8 +5,8 @@
     <router-link class="menutab" v-if="!(isLoggedIn)" to="/register">Register</router-link>
     <router-link class="menutab" v-if="!(isLoggedIn)" to="/signin">Signin</router-link>
     <button @click="handleSignOut" v-if="isLoggedIn" style="margin;:5px">SingOut</button>
-    <!-- <p>{{ isLoggedIn }}</p>
-    <p>{{ currentUser.uid }}</p> -->
+    <p>{{ isLoggedIn }}</p>
+    <!-- <p>{{ auth }}</p> -->
   </nav>
   <router-view/>
 </template>
@@ -48,8 +48,9 @@ const currentUser = ref("");
 
 onMounted(() => {
   auth = getAuth();
+  console.log(auth)
   onAuthStateChanged(auth, (user) => {
-    if(user){
+    if(user && user.emailVerified == true){
       isLoggedIn.value = true;
       currentUser.value = user
     }else{

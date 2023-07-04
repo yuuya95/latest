@@ -12,6 +12,8 @@ import RegisterView from "../views/RegisterView.vue"
 import RegisterSecondSTView from "../views/RegisterSecondSTView.vue"
 import RegisterSecondTCView from "../views/RegisterSecondTCView.vue"
 import SigninView from "../views/Signin.vue"
+
+// import getIsAuth from "../auth"
 // import { reject, resolve } from 'core-js/fn/promise'
 
 const routes = [
@@ -106,22 +108,43 @@ const getCurrentUser = () => {
   })
 }
 
+
+
+
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
 
+// router.beforeEach(async(to, from, next) => {
+//   if(to.matched.some((record) => record.meta.requiresAuth)){
+//     const a = await getCurrentUser()
+//     if(a){
+//       console.log()
+//       next();
+//     }else{
+//       console.log("you dont have token");
+//       next("/register");
+//     }
+//   }else{
+//     next();
+//   }
+// });
+
+
+
 router.beforeEach(async(to, from, next) => {
   if(to.matched.some((record) => record.meta.requiresAuth)){
-    if(await getCurrentUser()){
-      next();
-    }else{
-      console.log("you dont have token");
-      next("/register");
-    }
+    onAuthStateChanged(getAuth(), (user) => {
+      if(user && user.emailVerified == true){
+        next()
+      }else{
+        next("/register")
+      }
+    })
   }else{
-    next();
+    next()
   }
-});
+})
 
 export default router

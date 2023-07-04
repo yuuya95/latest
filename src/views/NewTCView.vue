@@ -1,19 +1,53 @@
 <template>
   <div class="editor">
-    <p><input type="text" placeholder="title" v-model="title"></p>
-    詳細<p><textarea v-model="describe" cols="30" rows="10"></textarea></p>
-    <p><input type="datetime-local" v-model="time"/></p>
-    <input type="number" placeholder="学年" v-model="grade">
-    <input type="number" placeholder="組" v-model="classes">
-    <p><button @click="getUser(this.grade, this.classes)">検索</button></p>
-    <p><select id="user" v-model="selected_users" multiple>
-      <option v-for="user in users" :key="user" v-bind:value="user" >{{ user.data.name }}</option>
-    </select></p>
-    <p><button @click="push()">追加</button></p>
-    <div>
-      <p v-for="sl_user in sl_users" :key="sl_user">{{sl_user}}</p>
+    <div class="tip1">
+      <p>ミーティング名</p>
+      <p><input type="text" placeholder="ミーティング名を入力" v-model="title"></p>
     </div>
-    <p><button @click="createMeeting({title: this.title, describe: this.describe, time: Timestamp.fromDate(new Date(this.time))})">ミーティングを作成</button></p>
+    <div class="tip">
+      <p>詳細</p>
+      <p><textarea v-model="describe" cols="30" rows="10"></textarea></p>
+    </div>
+    <div class="tip">
+      <p>ミーティング開始時間</p>
+      <p><input type="datetime-local" v-model="time"/></p>
+    </div>
+    <div class="tip">
+      <p>検索</p>
+      <p>学年<select v-model="grade" id="grade">
+        <option value="" disabled selected style="display:none;">学年を選択</option>
+        <option value=1>中学1年</option>
+        <option value=2>中学2年</option>
+        <option value=3>中学3年</option>
+        <option value=4>高校1年</option>
+        <option value=5>高校2年</option>
+        <option value=6>高校3年</option>
+      </select></p>
+      <p>クラス<select v-model="classes" id="classes">
+          <option value="" disabled selected style="display:none;">クラスを選択</option>
+          <option value=1>1組</option>
+          <option value=2>2組</option>
+          <option value=3>3組</option>
+          <option value=4>4組</option>
+          <option value=5>5組</option>
+          <option value=6>6組</option>
+      </select></p>
+      <p><button @click="getUser(this.grade, this.classes)">検索</button></p>
+      <p><select id="user" v-model="selected_users" multiple>
+        <option v-for="user in users" :key="user" v-bind:value="user" >{{ user.data.name }}</option>
+      </select></p>
+      <p><button @click="push()">追加</button></p>
+    </div>
+    <div class="tip">
+      <p>選択中</p>
+      <p><select id="user" v-model="remove_users" multiple>
+        <option v-for="sl_user in sl_users" :key="sl_user" v-bind:value="sl_user" >{{ sl_user.data.name }}</option>
+      </select></p>
+      <p><button @click="remove()">削除</button></p>
+    </div>
+    <div class="tip">
+      <p><button @click="createMeeting({title: this.title, describe: this.describe, time: Timestamp.fromDate(new Date(this.time))})">ミーティングを作成</button></p>
+    </div>
   </div>
 </template>
 
@@ -47,7 +81,7 @@ export default {
       querySnapshot.forEach((doc) => {
         const data = {id: doc.id, data: doc.data()}
         this.users.push(data)
-        console.log(doc.id, " => ", doc.data());
+        console.log(doc, " => ", doc.data());
       });
     },
 
@@ -55,24 +89,25 @@ export default {
       this.users = []
       this.selected_users.forEach(user => this.sl_users.push(user));
       this.selected_users = []
-    }
+    },
 
-    // async UpdateTodo(col, obj, id){
-    //   const colRef = collection(db, col)
-    //   const docRef = doc(colRef, id);
-    //   await updateDoc(docRef, obj);
-    //   this.moveNextScreen('about')
-    // },
-
-    // moveNextScreen: function (path) {
-    //   this.$router.push(path)
-    // }
+    remove: function(){
+      this.sl_users.forEach((sl_user, index) => {
+        this.remove_users.forEach((remove_user) => {
+          if(sl_user == remove_user){
+            this.sl_users.splice(index, 1);
+          }
+        })
+      })
+      console.log(this.remove_users, this.sl_users)
+    },
   },
   data() {
     return{
       title: "",
       selected_users: [],
       sl_users: [],
+      remove_users: [],
       users: [],
       grade: null,
       classes: null,
@@ -83,11 +118,17 @@ export default {
 }
 </script>
 
-<script setup>
-// import {doc, collection, getDocs, onSnapshot, addDoc, query, orderBy, deleteDoc, setDoc} from "firebase/firestore";
-// import { ref, reactive, onMounted } from "vue";
-// import { db } from "../firebase";
+<style scoped>
+.tip{
+  margin: 70px 0px;
+}
 
-// const collectionRef = await collection(db, "todo");
+.tip1{
+  margin: 0px 0px 70px 0px;
+}
 
-</script>
+p{
+  margin: 5px 0px;
+  font-weight: bold;
+}
+</style>

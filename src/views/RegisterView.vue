@@ -4,39 +4,54 @@
     <p><input type="text" placeholder="Password" v-model="password" /></p>
     <p><button @click="registerST">Submit st</button></p>
     <p><button @click="registerTC">Submit tc</button></p>
+    <p>{{ auth }}</p>
 </template>
 
 <script>
-import {getAuth, createUserWithEmailAndPassword} from "firebase/auth"
+import {getAuth, createUserWithEmailAndPassword, sendEmailVerification} from "firebase/auth"
 export default {
     name: 'RegisterView',
     methods:{
-        registerST: function (){
-            createUserWithEmailAndPassword(getAuth(), this.email, this.password)
-            .then((data) => {
+        mounted() {
+            this.auth = getAuth()
+            console.log("a")
+        },
+        async registerST(){
+            try {
+                const user = await createUserWithEmailAndPassword(getAuth(), this.email, this.password);
+                await sendEmailVerification(getAuth().currentUser)
                 console.log("success!")
                 this.$router.push({name: 'registerSecondST', params: {email: this.email, password: this.password}})
-            })
-            .catch((error) => {
-                console.log(error.code)
-            })
+            } catch (error) {
+                console.log(error)
+            }
         },
-        registerTC: function (){
+        async registerTC(){
             // this.$router.push({name: 'registerSecond', params: {email: this.email, password: this.password}})
-            createUserWithEmailAndPassword(getAuth(), this.email, this.password)
-            .then((data) => {
+            // createUserWithEmailAndPassword(getAuth(), this.email, this.password)
+            // .then((data) => {
+            //     console.log("success!")
+            //     this.$router.push("/")
+            // })
+            // .catch((error) => {
+            //     console.log(error.code)
+            // })
+            try {
+                const user = await createUserWithEmailAndPassword(getAuth(), this.email, this.password);
+                await sendEmailVerification(getAuth().currentUser)
                 console.log("success!")
-                this.$router.push("/")
-            })
-            .catch((error) => {
-                console.log(error.code)
-            })
+                this.$router.push({name: 'registerSecondTC', params: {email: this.email, password: this.password}})
+            } catch (error) {
+                console.log(error)
+            }
         },
     },
     data() {
         return{
             email: "",
-            password: ""
+            password: "",
+            store: null,
+            auth: null,
         }
     }
 }

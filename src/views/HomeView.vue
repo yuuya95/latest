@@ -11,6 +11,7 @@
 <script>
 import {collection, doc, updateDoc, getDocs, onSnapshot, addDoc, query, orderBy, deleteDoc, setDoc} from "firebase/firestore";
 import { db } from "../firebase";
+
 export default{
     name: "HomeView",
     methods: {

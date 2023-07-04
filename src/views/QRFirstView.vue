@@ -2,7 +2,7 @@
     <div>
       <p class="error">{{ error }}</p>
   
-      <p class="decode-result">Last result: <b>{{ result }}</b></p>
+      <p class="decode-result">name: <b>{{ username }}</b></p>
   
       <qrcode-stream @decode="onDecode" @init="onInit" />
       <p><router-link :to="{ name: 'oneMeeting', params: { id: this.$route.params.id }}">戻る</router-link></p>
@@ -36,6 +36,7 @@ import { QrcodeStream } from "vue3-qrcode-reader";
         result: '',
         error: '',
         userID: "",
+        username: "",
         docRef: null,
       }
     },
@@ -48,7 +49,7 @@ import { QrcodeStream } from "vue3-qrcode-reader";
         
         querySnapshot1.forEach((doc) => {
           this.userID = doc.id;
-          console.log(doc.id)
+          this.username = doc.data().name
         });
         console.log("a", querySnapshot1, querySnapshot1.data)
 
