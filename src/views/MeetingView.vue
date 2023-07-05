@@ -11,14 +11,17 @@
       <p><button @click="change_title()">ミーティング名を変更する</button></p>
       <div v-if="title_allow">
         <p><input type="text" placeholder="ミーティング名を入力" v-model="title"></p>
+        <p><button @click="change({title: title})">変更する</button></p>
       </div>
       <p><button @click="change_describe()">詳細を変更する</button></p>
       <div v-if="describe_allow">
         <p><textarea v-model="describe" cols="30" rows="10"></textarea></p>
+        <p><button @click="change({describe: describe})">変更する</button></p>
       </div>
       <p><button @click="change_date()">日付を変更する</button></p>
       <div v-if="date_allow">
         <p><input type="datetime-local" v-model="time"/></p>
+        <p><button @click="change({time: time})">変更する</button></p>
       </div>
       <p><button @click="change_user()">参加者を変更する</button></p>
       <div v-if="user_allow">
@@ -75,6 +78,11 @@ import { db } from "../firebase";
 export default {
   name: "MeetingView",
   methods: {
+    change: function(dic){
+      this.frankDocRef = doc(db, "meeting", this.$route.params.id);
+      updateDoc(this.frankDocRef, dic)
+      alert("変更しました。反映するには更新してください");
+    },
     choose: function(){
       if(this.allow){
         this.allow = false;
@@ -197,7 +205,7 @@ export default {
   },
   created() {
     this.showTodo();
-    this.getAttendance()
+    this.getAttendance();
   },
   data() {
     return {
@@ -220,6 +228,7 @@ export default {
       userone: null,
       users2: [],
       userID: null,
+      frankDocRef: null
     };
   },
 };

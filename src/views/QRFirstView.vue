@@ -26,6 +26,7 @@
   } from "firebase/firestore";
 import { db } from "../firebase";
 import { QrcodeStream } from "vue3-qrcode-reader";
+import { FirebaseError } from "firebase/app";
   
   export default {
     name: "QRFirstView",
@@ -43,30 +44,35 @@ import { QrcodeStream } from "vue3-qrcode-reader";
   
     methods: {
       onDecode: async function (result) {
-        const user_desc = result.split(",");
-        const q1 = query(collection(db, "user"), where("classes", "==", user_desc[1]), where("grade", "==", user_desc[0]), where("num", "==", user_desc[2]));
-        const querySnapshot1 = await getDocs(q1);
+        try{
+          const user_desc = result.split(",");
+          const q1 = query(collection(db, "user"), where("classes", "==", user_desc[1]), where("grade", "==", user_desc[0]), where("num", "==", user_desc[2]));
+          const querySnapshot1 = await getDocs(q1);
+          
+          querySnapshot1.forEach((doc) => {
+            this.userID = doc.id;
+            this.username = doc.data().name
+          });
+          console.log("a", querySnapshot1, querySnapshot1.data)
+
+
+          const q = query(collection(db, "meeting_user"), where("userID", "==", this.userID), where("meetingID", "==", String(this.$route.params.id)));
+
+          const querySnapshot = await getDocs(q);
+          console.log("b", querySnapshot, querySnapshot.data)
+
+          querySnapshot.forEach((document) => {
+            this.docRef = doc(db, "meeting_user", document.id);
+            console.log("b")
+          });
+
+          await updateDoc(this.docRef, {
+            "firstTime": serverTimestamp(),
+          })
+        }catch(e){
+          console.log(e)
+        }
         
-        querySnapshot1.forEach((doc) => {
-          this.userID = doc.id;
-          this.username = doc.data().name
-        });
-        console.log("a", querySnapshot1, querySnapshot1.data)
-
-
-        const q = query(collection(db, "meeting_user"), where("userID", "==", this.userID), where("meetingID", "==", String(this.$route.params.id)));
-
-        const querySnapshot = await getDocs(q);
-        console.log("b", querySnapshot, querySnapshot.data)
-
-        querySnapshot.forEach((document) => {
-          this.docRef = doc(db, "meeting_user", document.id);
-          console.log("b")
-        });
-
-        await updateDoc(this.docRef, {
-          "firstTime": serverTimestamp(),
-        })
       },
   
       async onInit (promise) {

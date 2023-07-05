@@ -2,9 +2,10 @@
   <nav>
     <router-link class="menutab" to="/new">New</router-link>
     <router-link class="menutab" to="/">Home</router-link>
+    <router-link class="menutab" to="/createQR">MyQR</router-link>
     <router-link class="menutab" v-if="!(isLoggedIn)" to="/register">Register</router-link>
-    <router-link class="menutab" v-if="!(isLoggedIn)" to="/signin">Signin</router-link>
-    <button @click="handleSignOut" v-if="isLoggedIn" style="margin;:5px">SingOut</button>
+    <router-link class="menutab" v-if="!(isLoggedIn)" to="/signin">SignIn</router-link>
+    <button @click="handleSignOut" v-if="isLoggedIn" style="margin;:5px">SignOut</button>
     <p>{{ isLoggedIn }}</p>
     <!-- <p>{{ auth }}</p> -->
   </nav>

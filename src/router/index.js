@@ -12,6 +12,7 @@ import RegisterView from "../views/RegisterView.vue"
 import RegisterSecondSTView from "../views/RegisterSecondSTView.vue"
 import RegisterSecondTCView from "../views/RegisterSecondTCView.vue"
 import SigninView from "../views/Signin.vue"
+import CreateQRView from "../views/CreateQRView"
 
 // import getIsAuth from "../auth"
 // import { reject, resolve } from 'core-js/fn/promise'
@@ -66,6 +67,14 @@ const routes = [
     }
   },
   {
+    path: "/createQR",
+    name: "CreateQR",
+    component: CreateQRView,
+    meta: {
+      requiresAuth: true,
+    }
+  },
+  {
     path: "/attendance/:id",
     name: "attendance",
     component: AttendanceView,
@@ -93,6 +102,7 @@ const routes = [
     name: "signin",
     component: SigninView,
   },
+  
 ]
 
 const getCurrentUser = () => {
@@ -136,8 +146,9 @@ const router = createRouter({
 router.beforeEach(async(to, from, next) => {
   if(to.matched.some((record) => record.meta.requiresAuth)){
     onAuthStateChanged(getAuth(), (user) => {
-      if(user && user.emailVerified == true){
+      if(user && user.emailVerified === true){
         next()
+        console.log("a")
       }else{
         next("/register")
       }

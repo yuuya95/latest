@@ -52,8 +52,9 @@
 </template>
 
 <script>
-import {collection, ref, doc, updateDoc, where, getDocs, onSnapshot, addDoc, query, orderBy, deleteDoc, setDoc, Timestamp} from "firebase/firestore";
+import {collection, ref, doc, updateDoc, where, getDocs, onSnapshot, addDoc, query, orderBy, deleteDoc, setDoc} from "firebase/firestore";
 import { db } from "../firebase";
+import { Timestamp } from 'firebase/firestore'
 export default {
   name: 'NewTCView',
   methods:{
