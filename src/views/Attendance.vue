@@ -6,7 +6,10 @@
                 <p>{{ user.grade }}, {{ user.classes }}, {{ user.num }}, {{ user.name }}</p>
                 <p v-if="user.isAttende">○</p>
                 <p v-else>×</p>
-                <div v-if="user.isAttende">{{ user.firstTime }}, {{ user.lastTime }}</div>
+                <div v-if="user.isAttende">
+                    <p>出席{{ user.firstTime }}</p>
+                    <p>退席{{ user.lastTime }}</p>
+                </div>
             </div>
         </div>
     </div>
@@ -70,6 +73,22 @@ export default {
                     // doc.data() がUndefinedの場合の処理
                     console.log("No such document!");
                 }
+
+                this.users.sort(function(a, b) {
+                    if (a.grade > b.grade) {
+                        if(a.classes > b.classes){
+                            if(a.num > b.num){
+                                return 1
+                            }else{
+                                return -1
+                            }
+                        }else{
+                            return -1;
+                        }
+                    } else {
+                        return -1;
+                    }
+                })
             }))
         }
     },

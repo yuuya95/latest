@@ -1,5 +1,6 @@
 <template>
     <h1>create account</h1>
+    <p style="color: red;">{{ errorMessage }}</p>
     <p><input type="text" placeholder="Email" v-model="email" /></p>
     <p><input type="text" placeholder="Password" v-model="password" /></p>
     <p><button @click="registerST">Submit st</button></p>
@@ -42,7 +43,11 @@ export default {
                 console.log("success!")
                 this.$router.push({name: 'registerSecondTC', params: {email: this.email, password: this.password}})
             } catch (error) {
-                console.log(error)
+                if (error === "auth/user-not-found") {
+                    this.errorMessage = "登録されていないメールアドレス又はパスワードが違います";
+                } else if (error === "auth/wrong-password") {
+                    this.errorMessage = "パスワードが違います";
+                }
             }
         },
     },
@@ -52,6 +57,7 @@ export default {
             password: "",
             store: null,
             auth: null,
+            errorMessage: "",
         }
     }
 }

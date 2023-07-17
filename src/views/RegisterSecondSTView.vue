@@ -48,7 +48,7 @@ export default {
             console.log(this.data)
             this.createUser()
             this.$router.push("/")
-            alert("メールアドレスの認証を行ってください")
+            alert("メールアドレスの認証を行い、更新してください")
         }
     },
     mounted : function(){

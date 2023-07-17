@@ -69,7 +69,7 @@ import { QrcodeStream } from "vue3-qrcode-reader";
           console.log(this.type)
 
           await updateDoc(this.docRef, {
-            "lastTime": serverTimestamp(),
+            "lastTime": new Date(),
           })
         }catch(e){
           console.log(e)

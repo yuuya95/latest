@@ -17,7 +17,7 @@ export default{
     name: "HomeView",
     methods: {
         async showTodo(){
-            const q = query(collection(db, "meeting"));
+            const q = query(collection(db, "meeting"), orderBy("createdAt", "desc"));
             const querySnapshot = await getDocs(q);
             querySnapshot.forEach((doc) => {
                 const obj = {id: doc.id}

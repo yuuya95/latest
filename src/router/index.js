@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { getAuth, onAuthStateChanged } from "firebase/auth"
+import {collection, doc, updateDoc, getDoc, onSnapshot, addDoc, query, orderBy, deleteDoc, setDoc} from "firebase/firestore";
+import { db } from "../firebase";
 import {Promise} from 'core-js';
 import NewTCView from '../views/NewTCView.vue'
 import MeetingView from "../views/MeetingView.vue"
@@ -13,6 +15,7 @@ import RegisterSecondSTView from "../views/RegisterSecondSTView.vue"
 import RegisterSecondTCView from "../views/RegisterSecondTCView.vue"
 import SigninView from "../views/Signin.vue"
 import CreateQRView from "../views/CreateQRView"
+import { getRandomValues } from 'crypto';
 
 // import getIsAuth from "../auth"
 // import { reject, resolve } from 'core-js/fn/promise'
@@ -24,6 +27,7 @@ const routes = [
     component: HomeView,
     meta: {
       requiresAuth: true,
+      tc: true
     }
   },
   {
@@ -32,6 +36,7 @@ const routes = [
     component: NewTCView,
     meta: {
       requiresAuth: true,
+      tc: true
     }
   },
   {
@@ -48,6 +53,7 @@ const routes = [
     component: MeetingView,
     meta: {
       requiresAuth: true,
+      tc: true
     }
   },
   {
@@ -56,6 +62,7 @@ const routes = [
     component: QRFirstView,
     meta: {
       requiresAuth: true,
+      tc: true
     }
   },
   {
@@ -64,6 +71,7 @@ const routes = [
     component: QRLastView,
     meta: {
       requiresAuth: true,
+      tc: true
     }
   },
   {
@@ -72,6 +80,7 @@ const routes = [
     component: CreateQRView,
     meta: {
       requiresAuth: true,
+      st: true
     }
   },
   {
@@ -86,6 +95,9 @@ const routes = [
     path: "/register",
     name: "register",
     component: RegisterView,
+    meta: {
+      register: true,
+    }
   },
   {
     path: "/registersecondST/:email",
@@ -126,6 +138,20 @@ const router = createRouter({
   routes
 })
 
+const getID = () => {
+  return new Promise(resolve => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      // eslint-disable-next-line
+      if(user == null){ 
+        resolve([false, "a"]);
+      }else{
+        console.log(user)
+        resolve([true, user.uid]);
+      }
+    })
+  })
+}
 // router.beforeEach(async(to, from, next) => {
 //   if(to.matched.some((record) => record.meta.requiresAuth)){
 //     const a = await getCurrentUser()
@@ -142,17 +168,35 @@ const router = createRouter({
 // });
 
 
-
-router.beforeEach(async(to, from, next) => {
+router.beforeEach((to, from, next) => {
   if(to.matched.some((record) => record.meta.requiresAuth)){
     onAuthStateChanged(getAuth(), (user) => {
       if(user && user.emailVerified === true){
-        next()
-        console.log("a")
+        next();
       }else{
-        next("/register")
+        next("/register");
       }
     })
+  }else{
+    next()
+  }
+})
+
+router.beforeEach(async (to, from, next) => {
+  if(to.matched.some((record) => record.meta.tc)){
+    const userID = await getID();
+    var currentUserState = false
+    if(userID[0]){
+      const docRef = doc(db, "user", userID[1]);
+      const docSnap = await getDoc(docRef);
+      currentUserState = docSnap.data().state !== "st";
+      console.log(currentUserState)
+    }
+    if(currentUserState){
+      next()
+    }else{
+      next("/createQR")
+    }
   }else{
     next()
   }

@@ -67,7 +67,7 @@ import { FirebaseError } from "firebase/app";
           });
 
           await updateDoc(this.docRef, {
-            "firstTime": serverTimestamp(),
+            "firstTime": new Date(),
           })
         }catch(e){
           console.log(e)

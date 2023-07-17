@@ -46,15 +46,15 @@
       <p><button @click="remove()">削除</button></p>
     </div>
     <div class="tip">
-      <p><button @click="createMeeting({title: this.title, describe: this.describe, time: Timestamp.fromDate(new Date(this.time))})">ミーティングを作成</button></p>
+      <p><button @click="createMeeting({title: this.title, describe: this.describe, time: new Date(this.time), createdAt: new Date()})">ミーティングを作成</button></p>
     </div>
   </div>
 </template>
 
 <script>
-import {collection, ref, doc, updateDoc, where, getDocs, onSnapshot, addDoc, query, orderBy, deleteDoc, setDoc} from "firebase/firestore";
+import {collection, ref, doc, updateDoc, where, getDocs, onSnapshot, addDoc, query, orderBy, deleteDoc, setDoc, Timestamp} from "firebase/firestore";
 import { db } from "../firebase";
-import { Timestamp } from 'firebase/firestore'
+import Detector from "@zxing/library/esm/core/aztec/detector/Detector";
 export default {
   name: 'NewTCView',
   methods:{
@@ -75,7 +75,8 @@ export default {
     },
 
     async getUser(){
-      const q = query(collection(db, "user"), where("classes", "==", String(this.classes)), where("grade", "==", String(this.grade)));
+      this.users = []
+      const q = query(collection(db, "user"), where("classes", "==", String(this.classes)), where("grade", "==", String(this.grade)), orderBy("num", "asc"));
 
       const querySnapshot = await getDocs(q);
 
